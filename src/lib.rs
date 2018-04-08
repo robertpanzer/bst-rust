@@ -53,4 +53,22 @@ mod tests {
         assert_eq!(0, tree.size());
         println!("Tree: after delete {:?}", tree);
     }
+
+    #[test]
+    fn iterate() {
+        let mut tree: Tree<String> = Tree::new();
+        tree.insert(String::from("D"));
+        tree.insert(String::from("A"));
+        tree.insert(String::from("B"));
+        tree.insert(String::from("C"));
+        tree.insert(String::from("F"));
+        tree.insert(String::from("E"));
+        tree.insert(String::from("G"));
+        let mut s = String::new();
+        for c in &tree {
+            s += c;
+        }
+        assert_eq!("ABCDEFG", s);
+    }
+
 }

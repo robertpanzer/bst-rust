@@ -39,6 +39,46 @@ impl<T: Ord> Tree<T> {
     pub fn contains(&self, value: &T) -> bool {
         self.root.contains(value)
     }
+
+    pub fn iter(&self) -> TreeIterator<T> {
+        let mut iter = TreeIterator { unvisited: Vec::new() };
+        iter.push_left_nodes(&self.root);
+        iter
+    }
+}
+
+pub struct TreeIterator<'a, T: 'a> {
+    unvisited: Vec<&'a Node<T>>
+}
+
+impl<'a, T: 'a> TreeIterator<'a, T> {
+    fn push_left_nodes(&mut self, mut l: &'a Link<T>) {
+        while let Link::NonEmpty(ref node) = *l {
+            self.unvisited.push(node);
+            l = &node.left;
+        }
+    }
+}
+
+impl<'a, T: 'a> Iterator for TreeIterator<'a, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<<Self as Iterator>::Item> {
+        self.unvisited.pop()
+            .map(|node| {
+                self.push_left_nodes(&node.right);
+                &node.value
+            })
+    }
+}
+
+impl<'a, T: 'a + Ord> IntoIterator for &'a Tree<T> {
+    type Item = &'a T;
+    type IntoIter = TreeIterator<'a, T>;
+
+    fn into_iter(self) -> <Self as IntoIterator>::IntoIter {
+        self.iter()
+    }
 }
 
 impl<T: Ord> Link<T> {
